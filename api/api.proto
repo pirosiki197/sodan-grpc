@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+option go_package = "github.com/pirosiki197/sodan-grpc/pkg/grpc/pb";
+
+package api;
+import "google/protobuf/empty.proto";
+
+service APIService{
+    // Sodan
+    rpc CreateSodan(CreateSodanRequest) returns (CreateSodanResponse);
+    rpc GetSodan(GetSodanRequest) returns (GetSodanResponse);
+    rpc CloseSodan(CloseSodanRequest) returns (google.protobuf.Empty);
+
+    // Chat
+    rpc CreateReply(CreateReplyRequest) returns (CreateReplyResponse);
+    rpc GetReply(GetReplyRequest) returns (GetReplyResponse);
+    rpc GetReplies(GetRepliesRequest) returns (GetRepliesResponse);
+    rpc SubscribeSodan(SubscribeSodanRequest) returns (stream Reply);
+}
+
+// Sodan
+message CreateSodanRequest {
+    string title = 1;
+    string text = 2;
+    string createrID = 3;
+    repeated Tag tags = 4;
+}
+
+message CreateSodanResponse {
+    uint64 id = 1;
+}
+
+message GetSodanRequest {
+    uint64 id = 1;
+}
+
+message GetSodanResponse {
+    Sodan sodan = 1;
+}
+
+message CloseSodanRequest {
+    uint64 id = 1;
+}
+
+// Chat
+message CreateReplyRequest {
+    string text = 1;
+    string createrID = 2;
+    uint64 sodanID = 3;
+}
+
+message CreateReplyResponse {
+    uint64 id = 1;
+}
+
+message GetReplyRequest {
+    uint64 id = 1;
+}
+
+message GetReplyResponse {
+    Reply reply = 1;
+}
+
+message GetRepliesRequest {
+    uint64 sodanID = 1;
+}
+
+message GetRepliesResponse {
+    repeated Reply replies = 1;
+}
+
+message SubscribeSodanRequest {
+    uint64 id = 1;
+}
+
+
+// Entities
+message Sodan {
+    uint64 id = 1;
+    string title = 2;
+    string text = 3;
+    string createrID = 4;
+    bool isClosed = 5;
+    repeated Tag tags = 6;
+}
+
+message Tag {
+    string name = 1;
+}
+
+message Reply {
+    uint64 id = 1;
+    string text = 2;
+    string createrID = 3;
+    uint64 sodanID = 4;
+}
