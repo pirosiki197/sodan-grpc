@@ -2,6 +2,7 @@ package repository
 
 import (
 	"log"
+	"time"
 
 	"github.com/pirosiki197/sodan-grpc/pkg/config"
 	"gorm.io/driver/mysql"
@@ -28,11 +29,16 @@ func NewRepository(config *config.Config) Repository {
 }
 
 func connectDB(config *config.Config) (*gorm.DB, error) {
-	db, err := gorm.Open(mysql.Open(config.DBConf.FormatDSN()), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
+	for i := 0; i < 10; i++ {
+		db, err := gorm.Open(mysql.Open(config.DBConf.FormatDSN()), &gorm.Config{})
+		if err != nil {
+			log.Println(err)
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		return db, nil
 	}
-	return db, nil
+	return nil, nil
 }
 
 func (r *repository) AutoMigrate(value any) error {

@@ -7,6 +7,10 @@ tasks:
   gents:
     cmds:
       - cd api && buf generate --template buf.gen.web.yaml
+  rm:
+    cmds:
+      - docker image rm sodan-grpc-server
+      - docker image rm sodan-grpc-client
   server:
     cmds:
       - cd cmd/server && go run main.go

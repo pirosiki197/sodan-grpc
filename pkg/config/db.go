@@ -17,7 +17,7 @@ func NewMySQLConfig() mysql.Config {
 		User:                 getEnvOrDefault("NS_MARIADB_USER", "root"),
 		Passwd:               getEnvOrDefault("NS_MARIADB_PASSWORD", "root"),
 		Net:                  "tcp",
-		Addr:                 getEnvOrDefault("NS_MARIADB_HOSTNAME", "localhost") + ":" + getEnvOrDefault("NS_MARIADB_PORT", "3306"),
+		Addr:                 getEnvOrDefault("NS_MARIADB_HOSTNAME", "db") + ":" + getEnvOrDefault("NS_MARIADB_PORT", "3306"),
 		DBName:               getEnvOrDefault("NS_MARIADB_DATABASE", "sodan"),
 		Loc:                  jst,
 		ParseTime:            true,

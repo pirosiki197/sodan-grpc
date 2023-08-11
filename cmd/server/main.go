@@ -25,9 +25,9 @@ func main() {
 	mux.Handle(path, handler)
 	corsHandler := cors.AllowAll().Handler(h2c.NewHandler(mux, &http2.Server{}))
 
-	fmt.Println("Server is ready to handle requests at", "http://localhost:8080")
+	fmt.Println("Server is ready to handle requests on port :8080")
 	http.ListenAndServe(
-		"localhost:8080",
+		":8080",
 		corsHandler,
 	)
 }
