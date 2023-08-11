@@ -1,28 +1,30 @@
 syntax = "proto3";
 
-option go_package = "github.com/pirosiki197/sodan-grpc/pkg/grpc/pb";
+option go_package = "github.com/pirosiki197/sodan-grpc/pkg/grpc/pb/api/v1;apiv1";
 
-package api;
+package api.v1;
 import "google/protobuf/empty.proto";
 
 service APIService{
     // Sodan
     rpc CreateSodan(CreateSodanRequest) returns (CreateSodanResponse);
     rpc GetSodan(GetSodanRequest) returns (GetSodanResponse);
+    // 10個ぐらい最新のを取得する
+    rpc GetSodanList(google.protobuf.Empty) returns (GetSodanListResponse);
     rpc CloseSodan(CloseSodanRequest) returns (google.protobuf.Empty);
 
     // Chat
     rpc CreateReply(CreateReplyRequest) returns (CreateReplyResponse);
     rpc GetReply(GetReplyRequest) returns (GetReplyResponse);
     rpc GetReplies(GetRepliesRequest) returns (GetRepliesResponse);
-    rpc SubscribeSodan(SubscribeSodanRequest) returns (stream Reply);
+    rpc SubscribeSodan(SubscribeSodanRequest) returns (stream SubscribeSodanResponse);
 }
 
 // Sodan
 message CreateSodanRequest {
     string title = 1;
     string text = 2;
-    string createrID = 3;
+    string creater_id = 3;
     repeated Tag tags = 4;
 }
 
@@ -38,6 +40,10 @@ message GetSodanResponse {
     Sodan sodan = 1;
 }
 
+message GetSodanListResponse {
+    repeated Sodan sodans = 1;
+}
+
 message CloseSodanRequest {
     uint64 id = 1;
 }
@@ -45,8 +51,8 @@ message CloseSodanRequest {
 // Chat
 message CreateReplyRequest {
     string text = 1;
-    string createrID = 2;
-    uint64 sodanID = 3;
+    string creater_id = 2;
+    uint64 sodan_id = 3;
 }
 
 message CreateReplyResponse {
@@ -62,7 +68,7 @@ message GetReplyResponse {
 }
 
 message GetRepliesRequest {
-    uint64 sodanID = 1;
+    uint64 sodan_id = 1;
 }
 
 message GetRepliesResponse {
@@ -73,14 +79,18 @@ message SubscribeSodanRequest {
     uint64 id = 1;
 }
 
+message SubscribeSodanResponse {
+    Reply reply = 1;
+}
+
 
 // Entities
 message Sodan {
     uint64 id = 1;
     string title = 2;
     string text = 3;
-    string createrID = 4;
-    bool isClosed = 5;
+    string creater_id = 4;
+    bool is_closed = 5;
     repeated Tag tags = 6;
 }
 
@@ -91,6 +101,6 @@ message Tag {
 message Reply {
     uint64 id = 1;
     string text = 2;
-    string createrID = 3;
-    uint64 sodanID = 4;
+    string creater_id = 3;
+    uint64 sodan_id = 4;
 }

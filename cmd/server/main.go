@@ -1,44 +1,38 @@
 package main
 
 import (
-	"log"
-	"net"
-	"os"
-	"os/signal"
+	"fmt"
+	"net/http"
 
 	"github.com/pirosiki197/sodan-grpc/pkg/config"
 	"github.com/pirosiki197/sodan-grpc/pkg/container"
 	server "github.com/pirosiki197/sodan-grpc/pkg/grpc"
-	"github.com/pirosiki197/sodan-grpc/pkg/grpc/pb"
+	"github.com/pirosiki197/sodan-grpc/pkg/grpc/pb/api/v1/apiv1connect"
 	migration "github.com/pirosiki197/sodan-grpc/pkg/migraiton"
 	"github.com/pirosiki197/sodan-grpc/pkg/repository"
 	"github.com/pirosiki197/sodan-grpc/pkg/service"
-	"google.golang.org/grpc"
+	"github.com/rs/cors"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 )
 
 func main() {
-	listner, err := net.Listen("tcp", ":8080")
-	if err != nil {
-		log.Fatal(err)
-	}
+	fmt.Println("Starting server on port :8080")
 
-	s := grpc.NewServer()
+	mux := http.NewServeMux()
 
-	pb.RegisterAPIServiceServer(s, newServer())
+	path, handler := apiv1connect.NewAPIServiceHandler(newServer())
+	mux.Handle(path, handler)
+	corsHandler := cors.AllowAll().Handler(h2c.NewHandler(mux, &http2.Server{}))
 
-	go func() {
-		log.Println("Starting server on port :8080")
-		s.Serve(listner)
-	}()
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
-	<-quit
-	log.Println("Stopping server...")
-	s.GracefulStop()
+	fmt.Println("Server is ready to handle requests at", "http://localhost:8080")
+	http.ListenAndServe(
+		"localhost:8080",
+		corsHandler,
+	)
 }
 
-func newServer() pb.APIServiceServer {
+func newServer() apiv1connect.APIServiceHandler {
 	config := config.NewConfig()
 	repository := repository.NewRepository(config)
 	container := container.NewContainer(repository, config)

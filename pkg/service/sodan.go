@@ -10,7 +10,9 @@ import (
 
 type SodanService interface {
 	FindByID(id uint) (*model.Sodan, error)
+	GetSodanList() ([]*model.Sodan, error)
 	CreateSodan(dto *dto.SodanDto) (uint, error)
+	CloseSodan(id uint) error
 	AddTags(sodanID string, dto []*dto.Tag) error
 }
 
@@ -32,6 +34,16 @@ func (s *sodanService) FindByID(id uint) (*model.Sodan, error) {
 	return sodan, nil
 }
 
+func (s *sodanService) GetSodanList() ([]*model.Sodan, error) {
+	repo := s.container.GetRepository()
+	sodans, err := repo.GetRecentSodans()
+	if err != nil {
+		return nil, err
+	}
+
+	return sodans, nil
+}
+
 func (s *sodanService) CreateSodan(dto *dto.SodanDto) (uint, error) {
 	if err := dto.Validate(); err != nil {
 		return 0, err
@@ -41,6 +53,12 @@ func (s *sodanService) CreateSodan(dto *dto.SodanDto) (uint, error) {
 	repo := s.container.GetRepository()
 
 	return repo.CreateSodan(sodan)
+}
+
+func (s *sodanService) CloseSodan(id uint) error {
+	repo := s.container.GetRepository()
+	closedSodan := model.Sodan{ID: id, IsClosed: true}
+	return repo.UpdateSodan(&closedSodan)
 }
 
 // AddTags does not add tags that already exist.

@@ -1,9 +1,21 @@
 version: 3
 
 tasks:
-  gen:
+  gengo:
     cmds:
-      - cd api && protoc --go_out=../pkg/grpc/pb --go_opt=paths=source_relative --go-grpc_out=../pkg/grpc/pb --go-grpc_opt=paths=source_relative *.proto
+      - cd api && buf generate --template buf.gen.go.yaml
+  gents:
+    cmds:
+      - cd api && buf generate --template buf.gen.web.yaml
+  server:
+    cmds:
+      - cd cmd/server && go run main.go
+  client:
+    cmds:
+      - cd cmd/client && go run main.go
+  front:
+    cmds:
+      - cd frontend && npm run dev
   up:
     cmds:
       - docker compose up -d

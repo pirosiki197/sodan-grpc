@@ -1,17 +1,14 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/pirosiki197/sodan-grpc/pkg/container"
 	"github.com/pirosiki197/sodan-grpc/pkg/repository/model"
 	"github.com/pirosiki197/sodan-grpc/pkg/repository/model/dto"
-	"github.com/pirosiki197/sodan-grpc/pkg/util"
 )
 
 type ReplyService interface {
 	FindByID(id uint) (*model.Reply, error)
-	FindBySodanID(sodanID string) ([]*model.Reply, error)
+	FindBySodanID(sodanID uint) ([]*model.Reply, error)
 	CreateReply(dto *dto.ReplyDto) (uint, error)
 }
 
@@ -29,13 +26,10 @@ func (s *replyService) FindByID(id uint) (*model.Reply, error) {
 	return repo.FindReplyByID(id)
 }
 
-func (s *replyService) FindBySodanID(sodanID string) ([]*model.Reply, error) {
-	if sodanID == "" {
-		return nil, errors.New("sodanID is empty")
-	}
+func (s *replyService) FindBySodanID(sodanID uint) ([]*model.Reply, error) {
 	repo := s.container.GetRepository()
 
-	return repo.FindRepliesBySodanID(util.ConvertToUint(sodanID))
+	return repo.FindRepliesBySodanID(sodanID)
 }
 
 func (s *replyService) CreateReply(dto *dto.ReplyDto) (uint, error) {

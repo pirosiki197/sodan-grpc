@@ -1,0 +1,8 @@
+version: v1
+plugins:
+  - plugin: buf.build/bufbuild/es:v1.3.0
+    out: ../frontend/src/api/pb
+    opt: target=ts
+  - plugin: buf.build/bufbuild/connect-es:v0.12.0
+    out: ../frontend/src/api/pb
+    opt: target=ts
