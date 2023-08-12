@@ -6,7 +6,7 @@ import { Sodan,Reply } from "./api/pb/api/v1/api_pb";
 import { onMounted, ref } from "vue";
 
 const transport = createConnectTransport({
-  baseUrl: "http://localhost:8080",
+  baseUrl: "https//back.trap.show",
 })
 
 const client = createPromiseClient(APIService, transport)
