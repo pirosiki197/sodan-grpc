@@ -9,4 +9,4 @@ RUN cd cmd/server && go build -o /app/main
 FROM alpine:latest
 WORKDIR /app
 COPY --from=builder /app/main .
-CMD [ "./app" ]
+CMD [ "./main" ]

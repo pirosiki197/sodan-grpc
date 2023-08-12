@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"slices"
 
 	"connectrpc.com/connect"
 	apiv1 "github.com/pirosiki197/sodan-grpc/pkg/grpc/pb/api/v1"
@@ -120,8 +119,8 @@ func appendCh(ch chan<- newReplyInfo) {
 }
 
 func removeCh(ch chan<- newReplyInfo) {
-	slices.DeleteFunc(chs, func(c chan<- newReplyInfo) bool {
-		return c == ch
+	lo.Filter(chs, func(c chan<- newReplyInfo, _ int) bool {
+		return c != ch
 	})
 }
 

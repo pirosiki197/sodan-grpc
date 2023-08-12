@@ -1,6 +1,6 @@
 module github.com/pirosiki197/sodan-grpc
 
-go 1.21
+go 1.20
 
 require (
 	connectrpc.com/connect v1.11.0

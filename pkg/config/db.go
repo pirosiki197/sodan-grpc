@@ -8,7 +8,8 @@ import (
 )
 
 func NewMySQLConfig() mysql.Config {
-	jst, err := time.LoadLocation("Asia/Tokyo")
+	time.Local = time.FixedZone("Local", 9*60*60)
+	jst, err := time.LoadLocation("Local")
 	if err != nil {
 		log.Fatal(err)
 	}
