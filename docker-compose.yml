@@ -26,7 +26,7 @@ services:
     image: adminer
     container_name: adminer
     ports:
-      - 8081:8080
+      - 8090:8080
 
 volumes:
   mysql:

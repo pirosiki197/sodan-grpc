@@ -1,12 +1,7 @@
-# Alpine Linuxベースの最新バージョンnodeを採用
-FROM node:18-alpine
-# コンテナ内の作業ディレクトリ
+FROM node:20-alpine
 WORKDIR /app
-
-COPY . .
-
+COPY package*.json ./
 RUN npm install
-
-EXPOSE 3000
-
+COPY . .
+EXPOSE 5173
 CMD [ "npm", "run", "dev" ]
