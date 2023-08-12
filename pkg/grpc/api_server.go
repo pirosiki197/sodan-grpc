@@ -1,10 +1,10 @@
 package grpc
 
 import (
-	"log/slog"
 	"os"
 
 	"github.com/pirosiki197/sodan-grpc/pkg/service"
+	"golang.org/x/exp/slog"
 )
 
 type server struct {
