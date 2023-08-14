@@ -40,6 +40,9 @@ const (
 	APIServiceGetSodanProcedure = "/api.v1.APIService/GetSodan"
 	// APIServiceGetSodanListProcedure is the fully-qualified name of the APIService's GetSodanList RPC.
 	APIServiceGetSodanListProcedure = "/api.v1.APIService/GetSodanList"
+	// APIServiceGetSodansByTagProcedure is the fully-qualified name of the APIService's GetSodansByTag
+	// RPC.
+	APIServiceGetSodansByTagProcedure = "/api.v1.APIService/GetSodansByTag"
 	// APIServiceCloseSodanProcedure is the fully-qualified name of the APIService's CloseSodan RPC.
 	APIServiceCloseSodanProcedure = "/api.v1.APIService/CloseSodan"
 	// APIServiceCreateReplyProcedure is the fully-qualified name of the APIService's CreateReply RPC.
@@ -58,8 +61,8 @@ type APIServiceClient interface {
 	// Sodan
 	CreateSodan(context.Context, *connect.Request[v1.CreateSodanRequest]) (*connect.Response[v1.CreateSodanResponse], error)
 	GetSodan(context.Context, *connect.Request[v1.GetSodanRequest]) (*connect.Response[v1.GetSodanResponse], error)
-	// 10個ぐらい最新のを取得する
 	GetSodanList(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[v1.GetSodanListResponse], error)
+	GetSodansByTag(context.Context, *connect.Request[v1.GetSodansByTagRequest]) (*connect.Response[v1.GetSodansByTagResponse], error)
 	CloseSodan(context.Context, *connect.Request[v1.CloseSodanRequest]) (*connect.Response[emptypb.Empty], error)
 	// Chat
 	CreateReply(context.Context, *connect.Request[v1.CreateReplyRequest]) (*connect.Response[v1.CreateReplyResponse], error)
@@ -91,6 +94,11 @@ func NewAPIServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...
 		getSodanList: connect.NewClient[emptypb.Empty, v1.GetSodanListResponse](
 			httpClient,
 			baseURL+APIServiceGetSodanListProcedure,
+			opts...,
+		),
+		getSodansByTag: connect.NewClient[v1.GetSodansByTagRequest, v1.GetSodansByTagResponse](
+			httpClient,
+			baseURL+APIServiceGetSodansByTagProcedure,
 			opts...,
 		),
 		closeSodan: connect.NewClient[v1.CloseSodanRequest, emptypb.Empty](
@@ -126,6 +134,7 @@ type aPIServiceClient struct {
 	createSodan    *connect.Client[v1.CreateSodanRequest, v1.CreateSodanResponse]
 	getSodan       *connect.Client[v1.GetSodanRequest, v1.GetSodanResponse]
 	getSodanList   *connect.Client[emptypb.Empty, v1.GetSodanListResponse]
+	getSodansByTag *connect.Client[v1.GetSodansByTagRequest, v1.GetSodansByTagResponse]
 	closeSodan     *connect.Client[v1.CloseSodanRequest, emptypb.Empty]
 	createReply    *connect.Client[v1.CreateReplyRequest, v1.CreateReplyResponse]
 	getReply       *connect.Client[v1.GetReplyRequest, v1.GetReplyResponse]
@@ -146,6 +155,11 @@ func (c *aPIServiceClient) GetSodan(ctx context.Context, req *connect.Request[v1
 // GetSodanList calls api.v1.APIService.GetSodanList.
 func (c *aPIServiceClient) GetSodanList(ctx context.Context, req *connect.Request[emptypb.Empty]) (*connect.Response[v1.GetSodanListResponse], error) {
 	return c.getSodanList.CallUnary(ctx, req)
+}
+
+// GetSodansByTag calls api.v1.APIService.GetSodansByTag.
+func (c *aPIServiceClient) GetSodansByTag(ctx context.Context, req *connect.Request[v1.GetSodansByTagRequest]) (*connect.Response[v1.GetSodansByTagResponse], error) {
+	return c.getSodansByTag.CallUnary(ctx, req)
 }
 
 // CloseSodan calls api.v1.APIService.CloseSodan.
@@ -178,8 +192,8 @@ type APIServiceHandler interface {
 	// Sodan
 	CreateSodan(context.Context, *connect.Request[v1.CreateSodanRequest]) (*connect.Response[v1.CreateSodanResponse], error)
 	GetSodan(context.Context, *connect.Request[v1.GetSodanRequest]) (*connect.Response[v1.GetSodanResponse], error)
-	// 10個ぐらい最新のを取得する
 	GetSodanList(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[v1.GetSodanListResponse], error)
+	GetSodansByTag(context.Context, *connect.Request[v1.GetSodansByTagRequest]) (*connect.Response[v1.GetSodansByTagResponse], error)
 	CloseSodan(context.Context, *connect.Request[v1.CloseSodanRequest]) (*connect.Response[emptypb.Empty], error)
 	// Chat
 	CreateReply(context.Context, *connect.Request[v1.CreateReplyRequest]) (*connect.Response[v1.CreateReplyResponse], error)
@@ -207,6 +221,11 @@ func NewAPIServiceHandler(svc APIServiceHandler, opts ...connect.HandlerOption) 
 	aPIServiceGetSodanListHandler := connect.NewUnaryHandler(
 		APIServiceGetSodanListProcedure,
 		svc.GetSodanList,
+		opts...,
+	)
+	aPIServiceGetSodansByTagHandler := connect.NewUnaryHandler(
+		APIServiceGetSodansByTagProcedure,
+		svc.GetSodansByTag,
 		opts...,
 	)
 	aPIServiceCloseSodanHandler := connect.NewUnaryHandler(
@@ -242,6 +261,8 @@ func NewAPIServiceHandler(svc APIServiceHandler, opts ...connect.HandlerOption) 
 			aPIServiceGetSodanHandler.ServeHTTP(w, r)
 		case APIServiceGetSodanListProcedure:
 			aPIServiceGetSodanListHandler.ServeHTTP(w, r)
+		case APIServiceGetSodansByTagProcedure:
+			aPIServiceGetSodansByTagHandler.ServeHTTP(w, r)
 		case APIServiceCloseSodanProcedure:
 			aPIServiceCloseSodanHandler.ServeHTTP(w, r)
 		case APIServiceCreateReplyProcedure:
@@ -271,6 +292,10 @@ func (UnimplementedAPIServiceHandler) GetSodan(context.Context, *connect.Request
 
 func (UnimplementedAPIServiceHandler) GetSodanList(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[v1.GetSodanListResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.v1.APIService.GetSodanList is not implemented"))
+}
+
+func (UnimplementedAPIServiceHandler) GetSodansByTag(context.Context, *connect.Request[v1.GetSodansByTagRequest]) (*connect.Response[v1.GetSodansByTagResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.v1.APIService.GetSodansByTag is not implemented"))
 }
 
 func (UnimplementedAPIServiceHandler) CloseSodan(context.Context, *connect.Request[v1.CloseSodanRequest]) (*connect.Response[emptypb.Empty], error) {

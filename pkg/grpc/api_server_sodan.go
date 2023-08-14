@@ -12,10 +12,12 @@ import (
 )
 
 func (s *server) CreateSodan(ctx context.Context, req *connect.Request[apiv1.CreateSodanRequest]) (*connect.Response[apiv1.CreateSodanResponse], error) {
+	s.logger.Info("CreateSodan", "req", req.Msg)
 	sodan := &dto.SodanDto{
 		Title:     req.Msg.Title,
 		Text:      req.Msg.Text,
 		CreaterID: req.Msg.CreaterId,
+		Tags:      lo.Map(req.Msg.Tags, func(t *apiv1.Tag, _ int) *model.Tag { return &model.Tag{Name: t.Name} }),
 	}
 
 	id, err := s.sodanService.CreateSodan(sodan)
@@ -30,7 +32,7 @@ func (s *server) CreateSodan(ctx context.Context, req *connect.Request[apiv1.Cre
 }
 
 func (s *server) GetSodan(ctx context.Context, req *connect.Request[apiv1.GetSodanRequest]) (*connect.Response[apiv1.GetSodanResponse], error) {
-	req.Header().Set("Access-Control-Allow-Origin", "*")
+	s.logger.Info("GetSodan", "req", req.Msg)
 	id := req.Msg.Id
 	sodan, err := s.sodanService.FindByID(uint(id))
 	if err != nil {
@@ -43,6 +45,7 @@ func (s *server) GetSodan(ctx context.Context, req *connect.Request[apiv1.GetSod
 			Title:     sodan.Title,
 			Text:      sodan.Text,
 			CreaterId: sodan.CreaterID,
+			Tags:      lo.Map(sodan.Tags, func(t *model.Tag, _ int) *apiv1.Tag { return &apiv1.Tag{Name: t.Name} }),
 		},
 	})
 	return res, nil
@@ -61,6 +64,29 @@ func (s *server) GetSodanList(ctx context.Context, req *connect.Request[emptypb.
 				Title:     s.Title,
 				Text:      s.Text,
 				CreaterId: s.CreaterID,
+				Tags:      lo.Map(s.Tags, func(t *model.Tag, _ int) *apiv1.Tag { return &apiv1.Tag{Name: t.Name} }),
+			}
+		}),
+	})
+	return res, nil
+}
+
+func (s *server) GetSodansByTag(ctx context.Context, req *connect.Request[apiv1.GetSodansByTagRequest]) (*connect.Response[apiv1.GetSodansByTagResponse], error) {
+	s.logger.Info("GetSodansByTag", "req", req.Msg)
+	tag := req.Msg.TagName
+	sodans, err := s.sodanService.FindByTag(tag)
+	if err != nil {
+		return nil, err
+	}
+
+	res := connect.NewResponse(&apiv1.GetSodansByTagResponse{
+		Sodans: lo.Map(sodans, func(s *model.Sodan, _ int) *apiv1.Sodan {
+			return &apiv1.Sodan{
+				Id:        uint64(s.ID),
+				Title:     s.Title,
+				Text:      s.Text,
+				CreaterId: s.CreaterID,
+				Tags:      lo.Map(s.Tags, func(t *model.Tag, _ int) *apiv1.Tag { return &apiv1.Tag{Name: t.Name} }),
 			}
 		}),
 	})

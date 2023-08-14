@@ -11,6 +11,7 @@ import (
 type SodanService interface {
 	FindByID(id uint) (*model.Sodan, error)
 	GetSodanList() ([]*model.Sodan, error)
+	FindByTag(tag string) ([]*model.Sodan, error)
 	CreateSodan(dto *dto.SodanDto) (uint, error)
 	CloseSodan(id uint) error
 	AddTags(sodanID string, dto []*dto.Tag) error
@@ -36,7 +37,17 @@ func (s *sodanService) FindByID(id uint) (*model.Sodan, error) {
 
 func (s *sodanService) GetSodanList() ([]*model.Sodan, error) {
 	repo := s.container.GetRepository()
-	sodans, err := repo.GetRecentSodans()
+	sodans, err := repo.FindSodans()
+	if err != nil {
+		return nil, err
+	}
+
+	return sodans, nil
+}
+
+func (s *sodanService) FindByTag(tag string) ([]*model.Sodan, error) {
+	repo := s.container.GetRepository()
+	sodans, err := repo.FindSodansByTag(tag)
 	if err != nil {
 		return nil, err
 	}

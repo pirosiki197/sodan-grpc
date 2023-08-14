@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CloseSodanRequest, CreateReplyRequest, CreateReplyResponse, CreateSodanRequest, CreateSodanResponse, GetRepliesRequest, GetRepliesResponse, GetReplyRequest, GetReplyResponse, GetSodanListResponse, GetSodanRequest, GetSodanResponse, SubscribeSodanRequest, SubscribeSodanResponse } from "./api_pb.js";
+import { CloseSodanRequest, CreateReplyRequest, CreateReplyResponse, CreateSodanRequest, CreateSodanResponse, GetRepliesRequest, GetRepliesResponse, GetReplyRequest, GetReplyResponse, GetSodanListResponse, GetSodanRequest, GetSodanResponse, GetSodansByTagRequest, GetSodansByTagResponse, SubscribeSodanRequest, SubscribeSodanResponse } from "./api_pb.js";
 import { Empty, MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -33,14 +33,21 @@ export const APIService = {
       kind: MethodKind.Unary,
     },
     /**
-     * 10個ぐらい最新のを取得する
-     *
      * @generated from rpc api.v1.APIService.GetSodanList
      */
     getSodanList: {
       name: "GetSodanList",
       I: Empty,
       O: GetSodanListResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc api.v1.APIService.GetSodansByTag
+     */
+    getSodansByTag: {
+      name: "GetSodansByTag",
+      I: GetSodansByTagRequest,
+      O: GetSodansByTagResponse,
       kind: MethodKind.Unary,
     },
     /**

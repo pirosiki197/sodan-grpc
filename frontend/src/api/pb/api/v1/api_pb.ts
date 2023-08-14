@@ -212,6 +212,80 @@ export class GetSodanListResponse extends Message<GetSodanListResponse> {
 }
 
 /**
+ * @generated from message api.v1.GetSodansByTagRequest
+ */
+export class GetSodansByTagRequest extends Message<GetSodansByTagRequest> {
+  /**
+   * @generated from field: string tag_name = 1;
+   */
+  tagName = "";
+
+  constructor(data?: PartialMessage<GetSodansByTagRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "api.v1.GetSodansByTagRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "tag_name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetSodansByTagRequest {
+    return new GetSodansByTagRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetSodansByTagRequest {
+    return new GetSodansByTagRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetSodansByTagRequest {
+    return new GetSodansByTagRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetSodansByTagRequest | PlainMessage<GetSodansByTagRequest> | undefined, b: GetSodansByTagRequest | PlainMessage<GetSodansByTagRequest> | undefined): boolean {
+    return proto3.util.equals(GetSodansByTagRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message api.v1.GetSodansByTagResponse
+ */
+export class GetSodansByTagResponse extends Message<GetSodansByTagResponse> {
+  /**
+   * @generated from field: repeated api.v1.Sodan sodans = 1;
+   */
+  sodans: Sodan[] = [];
+
+  constructor(data?: PartialMessage<GetSodansByTagResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "api.v1.GetSodansByTagResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "sodans", kind: "message", T: Sodan, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetSodansByTagResponse {
+    return new GetSodansByTagResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetSodansByTagResponse {
+    return new GetSodansByTagResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetSodansByTagResponse {
+    return new GetSodansByTagResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetSodansByTagResponse | PlainMessage<GetSodansByTagResponse> | undefined, b: GetSodansByTagResponse | PlainMessage<GetSodansByTagResponse> | undefined): boolean {
+    return proto3.util.equals(GetSodansByTagResponse, a, b);
+  }
+}
+
+/**
  * @generated from message api.v1.CloseSodanRequest
  */
 export class CloseSodanRequest extends Message<CloseSodanRequest> {

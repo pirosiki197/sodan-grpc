@@ -2,14 +2,20 @@ services:
   server:
     build: .
     container_name: server
+    volumes:
+      - ./:/app
     ports:
       - 8080:8080
 
   client:
     build: ./frontend
     container_name: client
+    volumes:
+      - ./frontend:/app
+    environment:
+      - API_URL=${API_URL}
     ports:
-      - 3000:5173
+      - 5173:5173
 
   db:
     image: mysql:latest

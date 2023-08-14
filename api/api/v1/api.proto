@@ -9,8 +9,8 @@ service APIService{
     // Sodan
     rpc CreateSodan(CreateSodanRequest) returns (CreateSodanResponse);
     rpc GetSodan(GetSodanRequest) returns (GetSodanResponse);
-    // 10個ぐらい最新のを取得する
     rpc GetSodanList(google.protobuf.Empty) returns (GetSodanListResponse);
+    rpc GetSodansByTag(GetSodansByTagRequest) returns (GetSodansByTagResponse);
     rpc CloseSodan(CloseSodanRequest) returns (google.protobuf.Empty);
 
     // Chat
@@ -41,6 +41,14 @@ message GetSodanResponse {
 }
 
 message GetSodanListResponse {
+    repeated Sodan sodans = 1;
+}
+
+message GetSodansByTagRequest {
+    string tag_name = 1;
+}
+
+message GetSodansByTagResponse {
     repeated Sodan sodans = 1;
 }
 
