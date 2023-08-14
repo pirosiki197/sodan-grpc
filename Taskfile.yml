@@ -26,9 +26,15 @@ tasks:
   down:
     cmds:
       - docker compose down
+  reload:
+    cmds:
+      - docker compose restart server
   reset:
     cmds:
       - docker copmose down -v
   log:
     cmds:
       - docker compose logs -f
+  push:
+    cmds:
+      - git push origin HEAD

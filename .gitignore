@@ -1,2 +1,4 @@
 */node_modules
 cmd/client
+
+.env
