@@ -9,6 +9,7 @@ import (
 	"github.com/pirosiki197/sodan-grpc/pkg/repository/model"
 	"github.com/pirosiki197/sodan-grpc/pkg/repository/model/dto"
 	"github.com/samber/lo"
+	"golang.org/x/exp/slices"
 )
 
 type newReplyInfo struct {
@@ -132,12 +133,9 @@ func appendCh(ch chan<- newReplyInfo) {
 func removeCh(ch chan<- newReplyInfo) {
 	s.m.Lock()
 	defer s.m.Unlock()
-	for i, c := range s.chs {
-		if c == ch {
-			s.chs = append(s.chs[:i], s.chs[i+1:]...)
-			break
-		}
-	}
+	slices.DeleteFunc(s.chs, func(c chan<- newReplyInfo) bool {
+		return c == ch
+	})
 }
 
 // お試し
