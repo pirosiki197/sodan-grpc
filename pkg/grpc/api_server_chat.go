@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"sync"
 
 	"connectrpc.com/connect"
 	apiv1 "github.com/pirosiki197/sodan-grpc/pkg/grpc/pb/api/v1"
@@ -15,9 +16,14 @@ type newReplyInfo struct {
 	sodanID uint64
 }
 
-var (
-	// 新しいリプライの情報を受け取るチャンネル
+type subscriber struct {
+	m   sync.Mutex
 	chs []chan<- newReplyInfo
+}
+
+var (
+	//
+	s subscriber
 	// 新しいリプライのSOdanIDを受け取るチャンネル
 	newReplych chan newReplyInfo = make(chan newReplyInfo, 1)
 )
@@ -118,20 +124,27 @@ func (s *server) SubscribeSodan(ctx context.Context, req *connect.Request[apiv1.
 }
 
 func appendCh(ch chan<- newReplyInfo) {
-	chs = append(chs, ch)
+	s.m.Lock()
+	defer s.m.Unlock()
+	s.chs = append(s.chs, ch)
 }
 
 func removeCh(ch chan<- newReplyInfo) {
-	lo.Filter(chs, func(c chan<- newReplyInfo, _ int) bool {
-		return c != ch
-	})
+	s.m.Lock()
+	defer s.m.Unlock()
+	for i, c := range s.chs {
+		if c == ch {
+			s.chs = append(s.chs[:i], s.chs[i+1:]...)
+			break
+		}
+	}
 }
 
 // お試し
 func checkNewReply() {
 	for {
 		newID := <-newReplych
-		for _, ch := range chs {
+		for _, ch := range s.chs {
 			ch <- newID
 		}
 	}
