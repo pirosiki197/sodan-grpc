@@ -3,4 +3,10 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-CMD [ "go", "run",  "cmd/server/main.go"]
+RUN go build -o main ./cmd/server
+
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/main .
+EXPOSE 8080
+CMD ["./main"]

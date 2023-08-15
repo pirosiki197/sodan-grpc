@@ -2,10 +2,14 @@ services:
   server:
     build: .
     container_name: server
-    volumes:
-      - ./:/app
     ports:
       - 8080:8080
+
+  client:
+    build: ./frontend
+    container_name: client
+    ports:
+      - 3000:80
 
   db:
     image: mysql:latest
