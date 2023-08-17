@@ -33,6 +33,7 @@ onMounted(async () => {
         console.log(res.reply)
         if (res.reply) {
             replies.value.push(res.reply)
+            console.log(res.reply)
         }
     }
 })
