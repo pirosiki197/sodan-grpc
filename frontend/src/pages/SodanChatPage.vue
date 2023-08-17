@@ -46,7 +46,7 @@ onMounted(async () => {
             <p>作成者: {{ sodan?.createrId }}</p>
             <p>{{ sodan?.text }}</p>
             <ul>
-                <h3>タグ</h3>
+                <h3 v-if="sodan?.tags.length">タグ</h3>
                 <li v-for="tag in sodan?.tags" :key="tag.name">
                     {{ tag.name }}
                 </li>
