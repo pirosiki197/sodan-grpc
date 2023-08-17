@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"log/slog"
 	"sync"
 
 	"connectrpc.com/connect"
@@ -25,8 +26,8 @@ type subscriber struct {
 var (
 	//
 	s subscriber
-	// 新しいリプライのSOdanIDを受け取るチャンネル
-	newReplych chan newReplyInfo = make(chan newReplyInfo, 1)
+	// 新しいリプライのSodanIDを受け取るチャンネル
+	newReplych chan newReplyInfo = make(chan newReplyInfo)
 )
 
 func (s *server) CreateReply(ctx context.Context, req *connect.Request[apiv1.CreateReplyRequest]) (*connect.Response[apiv1.CreateReplyResponse], error) {
@@ -44,6 +45,7 @@ func (s *server) CreateReply(ctx context.Context, req *connect.Request[apiv1.Cre
 
 	go func() {
 		newReplych <- newReplyInfo{id: uint64(id), sodanID: req.Msg.GetSodanId()}
+		s.logger.Info("CreateReply", "new reply", newReplyInfo{id: uint64(id), sodanID: req.Msg.GetSodanId()})
 	}()
 
 	res := connect.NewResponse(&apiv1.CreateReplyResponse{
@@ -117,7 +119,7 @@ func (s *server) SubscribeSodan(ctx context.Context, req *connect.Request[apiv1.
 					s.logger.Error("stream send error", "err", err)
 					return err
 				}
-				s.logger.Info("SubscribeSodan", "new reply", newReply)
+				s.logger.Info("SubscribeSodan", slog.Any("new reply", newReply))
 			}
 		case <-ctx.Done():
 			s.logger.Info("SubscribeSodan", "ctx done", ctx.Err())
