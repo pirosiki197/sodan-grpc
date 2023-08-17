@@ -2,6 +2,7 @@ package dto
 
 import (
 	"errors"
+	"slices"
 
 	"github.com/pirosiki197/sodan-grpc/pkg/repository/model"
 )
@@ -20,6 +21,9 @@ func (d *SodanDto) Validate() error {
 	if d.CreaterID == "" {
 		return errors.New("creater_id is empty")
 	}
+	d.Tags = slices.DeleteFunc(d.Tags, func(t *model.Tag) bool {
+		return t.Name == ""
+	})
 	return nil
 }
 
