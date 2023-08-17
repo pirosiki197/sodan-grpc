@@ -31,6 +31,13 @@ var (
 
 func (s *server) CreateReply(ctx context.Context, req *connect.Request[apiv1.CreateReplyRequest]) (*connect.Response[apiv1.CreateReplyResponse], error) {
 	s.logger.Info("CreateReply", "req", req.Msg)
+
+	// sodanが存在するか確認
+	_, err := s.sodanService.FindByID(uint(req.Msg.SodanId))
+	if err != nil {
+		return nil, err
+	}
+
 	reply := &dto.ReplyDto{
 		Text:      req.Msg.Text,
 		CreaterID: req.Msg.CreaterId,
