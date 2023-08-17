@@ -117,6 +117,7 @@ func (s *server) SubscribeSodan(ctx context.Context, req *connect.Request[apiv1.
 					s.logger.Error("stream send error", "err", err)
 					return err
 				}
+				s.logger.Info("SubscribeSodan", "new reply", newReply)
 			}
 		case <-ctx.Done():
 			s.logger.Info("SubscribeSodan", "ctx done", ctx.Err())
