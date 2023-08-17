@@ -119,6 +119,7 @@ func (s *server) SubscribeSodan(ctx context.Context, req *connect.Request[apiv1.
 				}
 			}
 		case <-ctx.Done():
+			s.logger.Info("SubscribeSodan", "ctx done", ctx.Err())
 			return nil
 		}
 	}

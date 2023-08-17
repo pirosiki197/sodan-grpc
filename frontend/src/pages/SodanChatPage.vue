@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import client from '../client';
+import { useClient } from '../client';
 import { Reply, Sodan } from '../api/pb/api/v1/api_pb';
+import { APIService } from '../api/pb/api/v1/api_connect';
 
 const header = new Headers()
 
@@ -9,6 +10,7 @@ const props = defineProps<{ id: bigint }>()
 const sodan = ref<Sodan>()
 const replies = ref<Reply[]>([])
 const replyText = ref<string>("")
+const client = useClient(APIService)
 
 const sendReply = async () => {
     const user = header.get("X-Forwarded-User")
@@ -28,6 +30,7 @@ onMounted(async () => {
     replies.value = repliesRes.replies
 
     for await (const res of client.subscribeSodan({ id: props.id })){
+        console.log(res.reply)
         if (res.reply) {
             replies.value.push(res.reply)
         }
@@ -42,6 +45,7 @@ onMounted(async () => {
             <p>作成者: {{ sodan?.createrId }}</p>
             <p>{{ sodan?.text }}</p>
             <ul>
+                <h3>タグ</h3>
                 <li v-for="tag in sodan?.tags" :key="tag.name">
                     {{ tag.name }}
                 </li>
@@ -49,6 +53,7 @@ onMounted(async () => {
         </div>
         <div>
             <ul>
+                <h2>返信</h2>
                 <li v-for="reply in replies" :key="reply.id.toString">
                     <p>{{ reply.createrId }}</p>
                     <p>{{ reply.text }}</p>

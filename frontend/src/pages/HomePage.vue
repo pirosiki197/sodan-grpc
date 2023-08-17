@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { APIService } from '../api/pb/api/v1/api_connect';
 import { Sodan } from '../api/pb/api/v1/api_pb';
-import client from '../client'
+import { useClient } from '../client'
 import { onMounted, ref } from 'vue';
 
 const sodans = ref<Sodan[]>([])
+const client = useClient(APIService)
 
 onMounted(async () => {
     const res = await client.getSodanList({});

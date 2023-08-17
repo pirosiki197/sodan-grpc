@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import client from '../client';
+import {useClient} from '../client';
 import { Tag } from '../api/pb/api/v1/api_pb';
+import { APIService } from '../api/pb/api/v1/api_connect';
 
 const user = new Headers().get("X-Forwarded-User")
 const title = ref("")
 const text = ref("")
 const tagName = ref("")
+const client = useClient(APIService)
 
 const createSodan = async () => {
     const tag = new Tag()
