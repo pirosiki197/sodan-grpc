@@ -20,6 +20,6 @@ func NewServer(ss service.SodanService, rs service.ReplyService) *server {
 		replyService: rs,
 		logger:       slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{AddSource: true})),
 	}
-	go checkNewReply()
+	go s.checkNewReply()
 	return s
 }

@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"context"
-	"log/slog"
+	"fmt"
 	"sync"
 
 	"connectrpc.com/connect"
@@ -10,7 +10,6 @@ import (
 	"github.com/pirosiki197/sodan-grpc/pkg/repository/model"
 	"github.com/pirosiki197/sodan-grpc/pkg/repository/model/dto"
 	"github.com/samber/lo"
-	"golang.org/x/exp/slices"
 )
 
 type newReplyInfo struct {
@@ -20,12 +19,12 @@ type newReplyInfo struct {
 
 type subscriber struct {
 	m   sync.Mutex
-	chs []chan<- newReplyInfo
+	chs []chan<- *model.Reply
 }
 
 var (
 	//
-	s subscriber
+	subsc subscriber
 	// 新しいリプライのSodanIDを受け取るチャンネル
 	newReplych chan newReplyInfo = make(chan newReplyInfo)
 )
@@ -45,7 +44,6 @@ func (s *server) CreateReply(ctx context.Context, req *connect.Request[apiv1.Cre
 
 	go func() {
 		newReplych <- newReplyInfo{id: uint64(id), sodanID: req.Msg.GetSodanId()}
-		s.logger.Info("CreateReply", "new reply", newReplyInfo{id: uint64(id), sodanID: req.Msg.GetSodanId()})
 	}()
 
 	res := connect.NewResponse(&apiv1.CreateReplyResponse{
@@ -96,17 +94,13 @@ func (s *server) GetReplies(ctx context.Context, req *connect.Request[apiv1.GetR
 func (s *server) SubscribeSodan(ctx context.Context, req *connect.Request[apiv1.SubscribeSodanRequest], stream *connect.ServerStream[apiv1.SubscribeSodanResponse]) error {
 	s.logger.Info("SubscribeSodan", "req", req.Msg)
 	sodanId := req.Msg.Id
-	ch := make(chan newReplyInfo)
+	ch := make(chan *model.Reply)
 	appendCh(ch)
 	defer removeCh(ch)
 	for {
 		select {
-		case newReply := <-ch:
-			if newReply.sodanID == sodanId {
-				reply, err := s.replyService.FindByID(uint(newReply.id))
-				if err != nil {
-					return err
-				}
+		case reply := <-ch:
+			if reply.SodanID == uint(sodanId) {
 				res := &apiv1.SubscribeSodanResponse{
 					Reply: &apiv1.Reply{
 						Id:        uint64(reply.ID),
@@ -119,7 +113,6 @@ func (s *server) SubscribeSodan(ctx context.Context, req *connect.Request[apiv1.
 					s.logger.Error("stream send error", "err", err)
 					return err
 				}
-				s.logger.Info("SubscribeSodan", slog.Any("new reply", newReply))
 			}
 		case <-ctx.Done():
 			s.logger.Info("SubscribeSodan", "ctx done", ctx.Err())
@@ -128,26 +121,34 @@ func (s *server) SubscribeSodan(ctx context.Context, req *connect.Request[apiv1.
 	}
 }
 
-func appendCh(ch chan<- newReplyInfo) {
-	s.m.Lock()
-	defer s.m.Unlock()
-	s.chs = append(s.chs, ch)
+func appendCh(ch chan<- *model.Reply) {
+	subsc.m.Lock()
+	defer subsc.m.Unlock()
+	subsc.chs = append(subsc.chs, ch)
 }
 
-func removeCh(ch chan<- newReplyInfo) {
-	s.m.Lock()
-	defer s.m.Unlock()
-	slices.DeleteFunc(s.chs, func(c chan<- newReplyInfo) bool {
-		return c == ch
-	})
+func removeCh(ch chan<- *model.Reply) {
+	subsc.m.Lock()
+	defer subsc.m.Unlock()
+	for i, c := range subsc.chs {
+		if c == ch {
+			subsc.chs = append(subsc.chs[:i], subsc.chs[i+1:]...)
+			break
+		}
+	}
 }
 
 // お試し
-func checkNewReply() {
+func (s *server) checkNewReply() {
 	for {
 		newID := <-newReplych
-		for _, ch := range s.chs {
-			ch <- newID
+		reply, err := s.replyService.FindByID(uint(newID.id))
+		if err != nil {
+			fmt.Println("err", err)
+			continue
+		}
+		for _, ch := range subsc.chs {
+			ch <- reply
 		}
 	}
 }
