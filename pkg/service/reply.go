@@ -2,14 +2,16 @@ package service
 
 import (
 	"github.com/pirosiki197/sodan-grpc/pkg/container"
+	apiv1 "github.com/pirosiki197/sodan-grpc/pkg/grpc/pb/api/v1"
 	"github.com/pirosiki197/sodan-grpc/pkg/repository/model"
-	"github.com/pirosiki197/sodan-grpc/pkg/repository/model/dto"
+	"github.com/pirosiki197/sodan-grpc/pkg/util/pbconv"
+	"github.com/pirosiki197/sodan-grpc/pkg/util/validate"
 )
 
 type ReplyService interface {
 	FindByID(id uint) (*model.Reply, error)
 	FindBySodanID(sodanID uint) ([]*model.Reply, error)
-	CreateReply(dto *dto.ReplyDto) (uint, error)
+	CreateReply(replyData *apiv1.Reply) (uint, error)
 }
 
 type replyService struct {
@@ -32,11 +34,11 @@ func (s *replyService) FindBySodanID(sodanID uint) ([]*model.Reply, error) {
 	return repo.FindRepliesBySodanID(sodanID)
 }
 
-func (s *replyService) CreateReply(dto *dto.ReplyDto) (uint, error) {
-	if err := dto.Validate(); err != nil {
+func (s *replyService) CreateReply(replyData *apiv1.Reply) (uint, error) {
+	if err := validate.ValidateReply(replyData); err != nil {
 		return 0, err
 	}
-	reply := dto.ToReply()
+	reply := pbconv.ToReplyModel(replyData)
 	repo := s.container.GetRepository()
 
 	return repo.CreateReply(reply)

@@ -8,8 +8,7 @@ import (
 	"connectrpc.com/connect"
 	apiv1 "github.com/pirosiki197/sodan-grpc/pkg/grpc/pb/api/v1"
 	"github.com/pirosiki197/sodan-grpc/pkg/repository/model"
-	"github.com/pirosiki197/sodan-grpc/pkg/repository/model/dto"
-	"github.com/samber/lo"
+	"github.com/pirosiki197/sodan-grpc/pkg/util/pbconv"
 )
 
 type newReplyInfo struct {
@@ -38,10 +37,10 @@ func (s *server) CreateReply(ctx context.Context, req *connect.Request[apiv1.Cre
 		return nil, err
 	}
 
-	reply := &dto.ReplyDto{
+	reply := &apiv1.Reply{
 		Text:      req.Msg.Text,
-		CreaterID: req.Msg.CreaterId,
-		SodanID:   uint(req.Msg.SodanId),
+		CreaterId: req.Msg.CreaterId,
+		SodanId:   req.Msg.SodanId,
 	}
 
 	id, err := s.replyService.CreateReply(reply)
@@ -67,12 +66,7 @@ func (s *server) GetReply(ctx context.Context, req *connect.Request[apiv1.GetRep
 	}
 
 	res := connect.NewResponse(&apiv1.GetReplyResponse{
-		Reply: &apiv1.Reply{
-			Id:        uint64(reply.ID),
-			Text:      reply.Text,
-			CreaterId: reply.CreaterID,
-			SodanId:   uint64(reply.SodanID),
-		},
+		Reply: pbconv.ToReplyData(reply),
 	})
 	return res, nil
 }
@@ -84,16 +78,9 @@ func (s *server) GetReplies(ctx context.Context, req *connect.Request[apiv1.GetR
 	if err != nil {
 		return nil, err
 	}
-	// TODO: pbconvに処理を移す
+
 	res := connect.NewResponse(&apiv1.GetRepliesResponse{
-		Replies: lo.Map(replies, func(reply *model.Reply, _ int) *apiv1.Reply {
-			return &apiv1.Reply{
-				Id:        uint64(reply.ID),
-				Text:      reply.Text,
-				CreaterId: reply.CreaterID,
-				SodanId:   uint64(reply.SodanID),
-			}
-		}),
+		Replies: pbconv.ToRepliesData(replies),
 	})
 	return res, nil
 }
@@ -109,12 +96,7 @@ func (s *server) SubscribeSodan(ctx context.Context, req *connect.Request[apiv1.
 		case reply := <-ch:
 			if reply.SodanID == uint(sodanId) {
 				res := &apiv1.SubscribeSodanResponse{
-					Reply: &apiv1.Reply{
-						Id:        uint64(reply.ID),
-						Text:      reply.Text,
-						CreaterId: reply.CreaterID,
-						SodanId:   uint64(reply.SodanID),
-					},
+					Reply: pbconv.ToReplyData(reply),
 				}
 				if err := stream.Send(res); err != nil {
 					s.logger.Error("stream send error", "err", err)
@@ -145,7 +127,6 @@ func removeCh(ch chan<- *model.Reply) {
 	}
 }
 
-// お試し
 func (s *server) checkNewReply() {
 	for {
 		newID := <-newReplych

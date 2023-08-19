@@ -2,9 +2,10 @@ package service
 
 import (
 	"github.com/pirosiki197/sodan-grpc/pkg/container"
+	apiv1 "github.com/pirosiki197/sodan-grpc/pkg/grpc/pb/api/v1"
 	"github.com/pirosiki197/sodan-grpc/pkg/repository/model"
-	"github.com/pirosiki197/sodan-grpc/pkg/repository/model/dto"
-	"github.com/pirosiki197/sodan-grpc/pkg/util"
+	"github.com/pirosiki197/sodan-grpc/pkg/util/pbconv"
+	"github.com/pirosiki197/sodan-grpc/pkg/util/validate"
 	"github.com/samber/lo"
 )
 
@@ -12,9 +13,9 @@ type SodanService interface {
 	FindByID(id uint) (*model.Sodan, error)
 	GetSodanList() ([]*model.Sodan, error)
 	FindByTag(tag string) ([]*model.Sodan, error)
-	CreateSodan(dto *dto.SodanDto) (uint, error)
+	CreateSodan(req *apiv1.Sodan) (uint, error)
 	CloseSodan(id uint) error
-	AddTags(sodanID string, dto []*dto.Tag) error
+	AddTags(sodanID uint, tagsData []*apiv1.Tag) error
 }
 
 type sodanService struct {
@@ -55,11 +56,8 @@ func (s *sodanService) FindByTag(tag string) ([]*model.Sodan, error) {
 	return sodans, nil
 }
 
-func (s *sodanService) CreateSodan(dto *dto.SodanDto) (uint, error) {
-	if err := dto.Validate(); err != nil {
-		return 0, err
-	}
-	sodan := dto.ToSodan()
+func (s *sodanService) CreateSodan(sodanData *apiv1.Sodan) (uint, error) {
+	sodan := pbconv.ToSodanModel(sodanData)
 	sodan.Tags = deleteDuplicateTags(sodan.Tags)
 	repo := s.container.GetRepository()
 
@@ -73,26 +71,26 @@ func (s *sodanService) CloseSodan(id uint) error {
 }
 
 // AddTags does not add tags that already exist.
-func (s *sodanService) AddTags(sodanID string, dto []*dto.Tag) error {
-	var tags []*model.Tag
-	for _, tag := range dto {
-		if err := tag.Validate(); err != nil {
-			return err
-		}
-		tags = append(tags, tag.ToTag())
+func (s *sodanService) AddTags(sodanID uint, tagsData []*apiv1.Tag) error {
+	if err := validate.ValidateTags(tagsData); err != nil {
+		return err
 	}
+	tags := pbconv.ToTagModels(tagsData)
+
 	repo := s.container.GetRepository()
-	sodan, err := repo.FindSodanByID(util.ConvertToUint(sodanID))
+	sodan, err := repo.FindSodanByID(sodanID)
 	if err != nil {
 		return err
 	}
+
 	tags = deleteDuplicateTags(tags)
 	filteredTags := fileterTags(tags, sodan)
+
 	if len(filteredTags) == 0 {
 		return nil
 	}
 
-	return repo.AddTags(util.ConvertToUint(sodanID), filteredTags)
+	return repo.AddTags(sodanID, filteredTags)
 }
 
 func deleteDuplicateTags(tags []*model.Tag) []*model.Tag {

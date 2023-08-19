@@ -5,19 +5,18 @@ import (
 
 	"connectrpc.com/connect"
 	apiv1 "github.com/pirosiki197/sodan-grpc/pkg/grpc/pb/api/v1"
-	"github.com/pirosiki197/sodan-grpc/pkg/repository/model"
-	"github.com/pirosiki197/sodan-grpc/pkg/repository/model/dto"
-	"github.com/samber/lo"
+	"github.com/pirosiki197/sodan-grpc/pkg/util/pbconv"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (s *server) CreateSodan(ctx context.Context, req *connect.Request[apiv1.CreateSodanRequest]) (*connect.Response[apiv1.CreateSodanResponse], error) {
 	s.logger.Info("CreateSodan", "req", req.Msg)
-	sodan := &dto.SodanDto{
+
+	sodan := &apiv1.Sodan{
 		Title:     req.Msg.Title,
 		Text:      req.Msg.Text,
-		CreaterID: req.Msg.CreaterId,
-		Tags:      lo.Map(req.Msg.Tags, func(t *apiv1.Tag, _ int) *model.Tag { return &model.Tag{Name: t.Name} }),
+		CreaterId: req.Msg.CreaterId,
+		Tags:      req.Msg.Tags,
 	}
 
 	id, err := s.sodanService.CreateSodan(sodan)
@@ -38,15 +37,9 @@ func (s *server) GetSodan(ctx context.Context, req *connect.Request[apiv1.GetSod
 	if err != nil {
 		return nil, err
 	}
-	// TODO: sodanをapiv1.Sodanに変換する関数を作成する -> pbconv
+
 	res := connect.NewResponse(&apiv1.GetSodanResponse{
-		Sodan: &apiv1.Sodan{
-			Id:        uint64(sodan.ID),
-			Title:     sodan.Title,
-			Text:      sodan.Text,
-			CreaterId: sodan.CreaterID,
-			Tags:      lo.Map(sodan.Tags, func(t *model.Tag, _ int) *apiv1.Tag { return &apiv1.Tag{Name: t.Name} }),
-		},
+		Sodan: pbconv.ToSodanData(sodan),
 	})
 	return res, nil
 }
@@ -58,15 +51,7 @@ func (s *server) GetSodanList(ctx context.Context, req *connect.Request[emptypb.
 	}
 
 	res := connect.NewResponse(&apiv1.GetSodanListResponse{
-		Sodans: lo.Map(sodans, func(s *model.Sodan, _ int) *apiv1.Sodan {
-			return &apiv1.Sodan{
-				Id:        uint64(s.ID),
-				Title:     s.Title,
-				Text:      s.Text,
-				CreaterId: s.CreaterID,
-				Tags:      lo.Map(s.Tags, func(t *model.Tag, _ int) *apiv1.Tag { return &apiv1.Tag{Name: t.Name} }),
-			}
-		}),
+		Sodans: pbconv.ToSodansData(sodans),
 	})
 	return res, nil
 }
@@ -80,15 +65,7 @@ func (s *server) GetSodansByTag(ctx context.Context, req *connect.Request[apiv1.
 	}
 
 	res := connect.NewResponse(&apiv1.GetSodansByTagResponse{
-		Sodans: lo.Map(sodans, func(s *model.Sodan, _ int) *apiv1.Sodan {
-			return &apiv1.Sodan{
-				Id:        uint64(s.ID),
-				Title:     s.Title,
-				Text:      s.Text,
-				CreaterId: s.CreaterID,
-				Tags:      lo.Map(s.Tags, func(t *model.Tag, _ int) *apiv1.Tag { return &apiv1.Tag{Name: t.Name} }),
-			}
-		}),
+		Sodans: pbconv.ToSodansData(sodans),
 	})
 	return res, nil
 }
