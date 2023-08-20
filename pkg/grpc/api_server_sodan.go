@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"log/slog"
 
 	"connectrpc.com/connect"
 	apiv1 "github.com/pirosiki197/sodan-grpc/pkg/grpc/pb/api/v1"
@@ -10,7 +11,7 @@ import (
 )
 
 func (s *server) CreateSodan(ctx context.Context, req *connect.Request[apiv1.CreateSodanRequest]) (*connect.Response[apiv1.CreateSodanResponse], error) {
-	s.logger.Info("CreateSodan", "req", req.Msg)
+	s.logger.Info("CreateSodan", slog.Any("header", req.Header))
 
 	sodan := &apiv1.Sodan{
 		Title:     req.Msg.Title,
@@ -31,7 +32,7 @@ func (s *server) CreateSodan(ctx context.Context, req *connect.Request[apiv1.Cre
 }
 
 func (s *server) GetSodan(ctx context.Context, req *connect.Request[apiv1.GetSodanRequest]) (*connect.Response[apiv1.GetSodanResponse], error) {
-	s.logger.Info("GetSodan", "req", req.Msg)
+	s.logger.Info("GetSodan", slog.Any("header", req.Header))
 	id := req.Msg.Id
 	sodan, err := s.sodanService.FindByID(uint(id))
 	if err != nil {
@@ -45,6 +46,7 @@ func (s *server) GetSodan(ctx context.Context, req *connect.Request[apiv1.GetSod
 }
 
 func (s *server) GetSodanList(ctx context.Context, req *connect.Request[emptypb.Empty]) (*connect.Response[apiv1.GetSodanListResponse], error) {
+	s.logger.Info("GetSodanList", slog.Any("header", req.Header))
 	sodans, err := s.sodanService.GetSodanList()
 	if err != nil {
 		return nil, err
@@ -57,7 +59,7 @@ func (s *server) GetSodanList(ctx context.Context, req *connect.Request[emptypb.
 }
 
 func (s *server) GetSodansByTag(ctx context.Context, req *connect.Request[apiv1.GetSodansByTagRequest]) (*connect.Response[apiv1.GetSodansByTagResponse], error) {
-	s.logger.Info("GetSodansByTag", "req", req.Msg)
+	s.logger.Info("GetSodansByTag", slog.Any("header", req.Header))
 	tag := req.Msg.TagName
 	sodans, err := s.sodanService.FindByTag(tag)
 	if err != nil {
@@ -71,6 +73,7 @@ func (s *server) GetSodansByTag(ctx context.Context, req *connect.Request[apiv1.
 }
 
 func (s *server) CloseSodan(ctx context.Context, req *connect.Request[apiv1.CloseSodanRequest]) (*connect.Response[emptypb.Empty], error) {
+	s.logger.Info("CloseSodan", slog.Any("header", req.Header))
 	id := req.Msg.Id
 	err := s.sodanService.CloseSodan(uint(id))
 	if err != nil {
