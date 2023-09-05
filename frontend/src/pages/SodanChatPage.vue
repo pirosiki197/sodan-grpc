@@ -6,7 +6,7 @@ import { APIService } from '../api/pb/api/v1/api_connect';
 
 const header = new Headers()
 
-const props = defineProps<{ id: string }>()
+const props = defineProps<{ id: number }>()
 const sodan = ref<Sodan>()
 const replies = ref<Reply[]>([])
 const replyText = ref<string>("")
@@ -15,7 +15,7 @@ const client = useClient(APIService)
 const sendReply = async () => {
     const user = header.get("X-Showcase-User")
     await client.createReply({
-        sodanId: BigInt(props.id),
+        sodanId: props.id,
         text: replyText.value,
         createrId: user ? user : "guest",
     })
@@ -23,13 +23,13 @@ const sendReply = async () => {
 }
 
 onMounted(async () => {
-    const sodanRes = await client.getSodan({ id: BigInt(props.id) })
+    const sodanRes = await client.getSodan({ id: props.id })
     sodan.value = sodanRes.sodan
 
-    const repliesRes = await client.getReplies({ sodanId: BigInt(props.id) })
+    const repliesRes = await client.getReplies({ sodanId: props.id })
     replies.value = repliesRes.replies
 
-    for await (const res of client.subscribeSodan({ id: BigInt(props.id) })){
+    for await (const res of client.subscribeSodan({ id: props.id })){
         console.log(res.reply)
         if (res.reply) {
             replies.value.push(res.reply)
@@ -55,7 +55,7 @@ onMounted(async () => {
         <div>
             <ul>
                 <h2>返信</h2>
-                <li v-for="reply in replies" :key="reply.id.toString">
+                <li v-for="reply in replies" :key="reply.id">
                     <p>{{ reply.createrId }}</p>
                     <p>{{ reply.text }}</p>
                 </li>

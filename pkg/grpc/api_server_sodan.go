@@ -26,7 +26,7 @@ func (s *server) CreateSodan(ctx context.Context, req *connect.Request[apiv1.Cre
 	}
 
 	res := connect.NewResponse(&apiv1.CreateSodanResponse{
-		Id: uint64(id),
+		Id: uint32(id),
 	})
 	return res, nil
 }

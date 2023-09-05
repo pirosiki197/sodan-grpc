@@ -4,7 +4,7 @@
 // @ts-nocheck
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
-import { Message, proto3, protoInt64 } from "@bufbuild/protobuf";
+import { Message, proto3 } from "@bufbuild/protobuf";
 
 /**
  * Sodan
@@ -68,9 +68,9 @@ export class CreateSodanRequest extends Message<CreateSodanRequest> {
  */
 export class CreateSodanResponse extends Message<CreateSodanResponse> {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: uint32 id = 1;
    */
-  id = protoInt64.zero;
+  id = 0;
 
   constructor(data?: PartialMessage<CreateSodanResponse>) {
     super();
@@ -80,7 +80,7 @@ export class CreateSodanResponse extends Message<CreateSodanResponse> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "api.v1.CreateSodanResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 1, name: "id", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateSodanResponse {
@@ -105,9 +105,9 @@ export class CreateSodanResponse extends Message<CreateSodanResponse> {
  */
 export class GetSodanRequest extends Message<GetSodanRequest> {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: uint32 id = 1;
    */
-  id = protoInt64.zero;
+  id = 0;
 
   constructor(data?: PartialMessage<GetSodanRequest>) {
     super();
@@ -117,7 +117,7 @@ export class GetSodanRequest extends Message<GetSodanRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "api.v1.GetSodanRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 1, name: "id", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetSodanRequest {
@@ -290,9 +290,9 @@ export class GetSodansByTagResponse extends Message<GetSodansByTagResponse> {
  */
 export class CloseSodanRequest extends Message<CloseSodanRequest> {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: uint32 id = 1;
    */
-  id = protoInt64.zero;
+  id = 0;
 
   constructor(data?: PartialMessage<CloseSodanRequest>) {
     super();
@@ -302,7 +302,7 @@ export class CloseSodanRequest extends Message<CloseSodanRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "api.v1.CloseSodanRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 1, name: "id", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CloseSodanRequest {
@@ -339,9 +339,9 @@ export class CreateReplyRequest extends Message<CreateReplyRequest> {
   createrId = "";
 
   /**
-   * @generated from field: uint64 sodan_id = 3;
+   * @generated from field: uint32 sodan_id = 3;
    */
-  sodanId = protoInt64.zero;
+  sodanId = 0;
 
   constructor(data?: PartialMessage<CreateReplyRequest>) {
     super();
@@ -353,7 +353,7 @@ export class CreateReplyRequest extends Message<CreateReplyRequest> {
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "creater_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 3, name: "sodan_id", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 3, name: "sodan_id", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateReplyRequest {
@@ -378,9 +378,9 @@ export class CreateReplyRequest extends Message<CreateReplyRequest> {
  */
 export class CreateReplyResponse extends Message<CreateReplyResponse> {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: uint32 id = 1;
    */
-  id = protoInt64.zero;
+  id = 0;
 
   constructor(data?: PartialMessage<CreateReplyResponse>) {
     super();
@@ -390,7 +390,7 @@ export class CreateReplyResponse extends Message<CreateReplyResponse> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "api.v1.CreateReplyResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 1, name: "id", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateReplyResponse {
@@ -415,9 +415,9 @@ export class CreateReplyResponse extends Message<CreateReplyResponse> {
  */
 export class GetReplyRequest extends Message<GetReplyRequest> {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: uint32 id = 1;
    */
-  id = protoInt64.zero;
+  id = 0;
 
   constructor(data?: PartialMessage<GetReplyRequest>) {
     super();
@@ -427,7 +427,7 @@ export class GetReplyRequest extends Message<GetReplyRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "api.v1.GetReplyRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 1, name: "id", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetReplyRequest {
@@ -489,9 +489,9 @@ export class GetReplyResponse extends Message<GetReplyResponse> {
  */
 export class GetRepliesRequest extends Message<GetRepliesRequest> {
   /**
-   * @generated from field: uint64 sodan_id = 1;
+   * @generated from field: uint32 sodan_id = 1;
    */
-  sodanId = protoInt64.zero;
+  sodanId = 0;
 
   constructor(data?: PartialMessage<GetRepliesRequest>) {
     super();
@@ -501,7 +501,7 @@ export class GetRepliesRequest extends Message<GetRepliesRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "api.v1.GetRepliesRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "sodan_id", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 1, name: "sodan_id", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetRepliesRequest {
@@ -563,9 +563,9 @@ export class GetRepliesResponse extends Message<GetRepliesResponse> {
  */
 export class SubscribeSodanRequest extends Message<SubscribeSodanRequest> {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: uint32 id = 1;
    */
-  id = protoInt64.zero;
+  id = 0;
 
   constructor(data?: PartialMessage<SubscribeSodanRequest>) {
     super();
@@ -575,7 +575,7 @@ export class SubscribeSodanRequest extends Message<SubscribeSodanRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "api.v1.SubscribeSodanRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 1, name: "id", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SubscribeSodanRequest {
@@ -639,9 +639,9 @@ export class SubscribeSodanResponse extends Message<SubscribeSodanResponse> {
  */
 export class Sodan extends Message<Sodan> {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: uint32 id = 1;
    */
-  id = protoInt64.zero;
+  id = 0;
 
   /**
    * @generated from field: string title = 2;
@@ -676,7 +676,7 @@ export class Sodan extends Message<Sodan> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "api.v1.Sodan";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 1, name: "id", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
     { no: 2, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "creater_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
@@ -743,9 +743,9 @@ export class Tag extends Message<Tag> {
  */
 export class Reply extends Message<Reply> {
   /**
-   * @generated from field: uint64 id = 1;
+   * @generated from field: uint32 id = 1;
    */
-  id = protoInt64.zero;
+  id = 0;
 
   /**
    * @generated from field: string text = 2;
@@ -758,9 +758,9 @@ export class Reply extends Message<Reply> {
   createrId = "";
 
   /**
-   * @generated from field: uint64 sodan_id = 4;
+   * @generated from field: uint32 sodan_id = 4;
    */
-  sodanId = protoInt64.zero;
+  sodanId = 0;
 
   constructor(data?: PartialMessage<Reply>) {
     super();
@@ -770,10 +770,10 @@ export class Reply extends Message<Reply> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "api.v1.Reply";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 1, name: "id", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
     { no: 2, name: "text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "creater_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 4, name: "sodan_id", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 4, name: "sodan_id", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Reply {

@@ -12,8 +12,8 @@ import (
 )
 
 type newReplyInfo struct {
-	id      uint64
-	sodanID uint64
+	id      uint32
+	sodanID uint32
 }
 
 type subscriber struct {
@@ -49,11 +49,11 @@ func (s *server) CreateReply(ctx context.Context, req *connect.Request[apiv1.Cre
 	}
 
 	go func() {
-		newReplych <- newReplyInfo{id: uint64(id), sodanID: req.Msg.GetSodanId()}
+		newReplych <- newReplyInfo{id: uint32(id), sodanID: req.Msg.GetSodanId()}
 	}()
 
 	res := connect.NewResponse(&apiv1.CreateReplyResponse{
-		Id: uint64(id),
+		Id: uint32(id),
 	})
 	return res, nil
 }

@@ -39,7 +39,7 @@ func ToTagsData(tags []*model.Tag) []*apiv1.Tag {
 func ToReplyData(reply *model.Reply) *apiv1.Reply {
 	return &apiv1.Reply{
 		Text:      reply.Text,
-		SodanId:   uint64(reply.SodanID),
+		SodanId:   uint32(reply.SodanID),
 		CreaterId: reply.CreaterID,
 	}
 }
