@@ -6,7 +6,7 @@ import { APIService } from '../api/pb/api/v1/api_connect';
 
 const header = new Headers()
 
-const props = defineProps<{ id: bigint }>()
+const props = defineProps<{ id: string }>()
 const sodan = ref<Sodan>()
 const replies = ref<Reply[]>([])
 const replyText = ref<string>("")
@@ -15,7 +15,7 @@ const client = useClient(APIService)
 const sendReply = async () => {
     const user = header.get("X-Showcase-User")
     await client.createReply({
-        sodanId: props.id,
+        sodanId: BigInt(props.id),
         text: replyText.value,
         createrId: user ? user : "guest",
     })
@@ -23,13 +23,13 @@ const sendReply = async () => {
 }
 
 onMounted(async () => {
-    const sodanRes = await client.getSodan({ id: props.id })
+    const sodanRes = await client.getSodan({ id: BigInt(props.id) })
     sodan.value = sodanRes.sodan
 
-    const repliesRes = await client.getReplies({ sodanId: props.id })
+    const repliesRes = await client.getReplies({ sodanId: BigInt(props.id) })
     replies.value = repliesRes.replies
 
-    for await (const res of client.subscribeSodan({ id: props.id })){
+    for await (const res of client.subscribeSodan({ id: BigInt(props.id) })){
         console.log(res.reply)
         if (res.reply) {
             replies.value.push(res.reply)
