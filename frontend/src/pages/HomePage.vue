@@ -14,7 +14,7 @@ onMounted(async () => {
 })
 
 const findByTag = async (tag: string) => {
-    const res = await client.getSodansByTag({ tagName: tag})
+    const res = await client.getSodansByTag({ tagName: tag })
     sodans.value = res.sodans
 }
 </script>
@@ -24,7 +24,7 @@ const findByTag = async (tag: string) => {
     <div>
         <ul>
             <li v-for="sodan in sodans" :key="sodan.id">
-                <router-link :to="`/sodan/${sodan.id}`">{{ sodan.title }}</router-link>
+                <router-link :to="{ name: 'sodan', params: { id: sodan.id } }">{{ sodan.title }}</router-link>
                 <p v-if="sodan.tags.length">タグ</p>
                 <ul>
                     <li v-for="tag in sodan.tags" :key="tag.name">
