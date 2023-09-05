@@ -24,7 +24,7 @@ const findByTag = async (tag: string) => {
     <div>
         <ul>
             <li v-for="sodan in sodans" :key="sodan.id.toString">
-                <router-link :to="`/sodan/${sodan.id}`">{{ sodan.title }}</router-link>
+                <router-link :to="`/sodan/${sodan.id.toString}`">{{ sodan.title }}</router-link>
                 <p v-if="sodan.tags.length">タグ</p>
                 <ul>
                     <li v-for="tag in sodan.tags" :key="tag.name">
