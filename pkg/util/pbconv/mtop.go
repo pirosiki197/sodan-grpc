@@ -7,6 +7,7 @@ import (
 
 func ToSodanData(sodan *model.Sodan) *apiv1.Sodan {
 	return &apiv1.Sodan{
+		Id:        uint32(sodan.ID),
 		Title:     sodan.Title,
 		Text:      sodan.Text,
 		CreaterId: sodan.CreaterID,
