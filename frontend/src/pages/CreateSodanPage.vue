@@ -4,7 +4,7 @@ import {useClient} from '../client';
 import { Tag } from '../api/pb/api/v1/api_pb';
 import { APIService } from '../api/pb/api/v1/api_connect';
 
-const user = new Headers().get("X-Forwarded-User")
+const user = new Headers().get("X-Showcase-User")
 const title = ref("")
 const text = ref("")
 const tagName = ref("")

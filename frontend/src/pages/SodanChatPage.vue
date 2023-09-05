@@ -13,7 +13,7 @@ const replyText = ref<string>("")
 const client = useClient(APIService)
 
 const sendReply = async () => {
-    const user = header.get("X-Forwarded-User")
+    const user = header.get("X-Showcase-User")
     await client.createReply({
         sodanId: props.id,
         text: replyText.value,
