@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sync"
 
 	"connectrpc.com/connect"
@@ -22,14 +23,12 @@ type subscriber struct {
 }
 
 var (
-	//
 	subsc subscriber
 	// 新しいリプライのSodanIDを受け取るチャンネル
 	newReplych chan newReplyInfo = make(chan newReplyInfo)
 )
 
 func (s *server) CreateReply(ctx context.Context, req *connect.Request[apiv1.CreateReplyRequest]) (*connect.Response[apiv1.CreateReplyResponse], error) {
-	s.logger.Info("CreateReply", "req", req.Msg)
 
 	// sodanが存在するか確認
 	_, err := s.sodanService.FindByID(uint(req.Msg.SodanId))
@@ -72,7 +71,6 @@ func (s *server) GetReply(ctx context.Context, req *connect.Request[apiv1.GetRep
 }
 
 func (s *server) GetReplies(ctx context.Context, req *connect.Request[apiv1.GetRepliesRequest]) (*connect.Response[apiv1.GetRepliesResponse], error) {
-	s.logger.Info("GetReplies", "req", req.Msg)
 	sodanID := req.Msg.SodanId
 	replies, err := s.replyService.FindBySodanID(uint(sodanID))
 	if err != nil {
@@ -86,7 +84,6 @@ func (s *server) GetReplies(ctx context.Context, req *connect.Request[apiv1.GetR
 }
 
 func (s *server) SubscribeSodan(ctx context.Context, req *connect.Request[apiv1.SubscribeSodanRequest], stream *connect.ServerStream[apiv1.SubscribeSodanResponse]) error {
-	s.logger.Info("SubscribeSodan", "req", req.Msg)
 	sodanId := req.Msg.Id
 	ch := make(chan *model.Reply)
 	appendCh(ch)
@@ -119,12 +116,9 @@ func appendCh(ch chan<- *model.Reply) {
 func removeCh(ch chan<- *model.Reply) {
 	subsc.m.Lock()
 	defer subsc.m.Unlock()
-	for i, c := range subsc.chs {
-		if c == ch {
-			subsc.chs = append(subsc.chs[:i], subsc.chs[i+1:]...)
-			break
-		}
-	}
+	subsc.chs = slices.DeleteFunc(subsc.chs, func(c chan<- *model.Reply) bool {
+		return c == ch
+	})
 }
 
 func (s *server) checkNewReply() {
